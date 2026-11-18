@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: WorkflowTemplate
 metadata:
-  name: first-pipeline # Executable ID (max length 64 lowercase-hyphen-separated), please modify this to any value if you are not the only user of your SAP AI Core instance. Example: `first-pipeline-1234`
+  name: first-pipeline
   annotations:
     scenarios.ai.sap.com/description: "Introduction to SAP AI Core"
     scenarios.ai.sap.com/name: "Tutorial"
@@ -19,11 +19,15 @@ spec:
         template: greeter
 
   - name: greeter
+    metadata:
+      labels:
+        ai.sap.com/resourcePlan: starter   # ← ADD THIS (fixes PENDING)
     container:
-      image: docker.io/python:latest
+      image: docker.io/python:3.11-slim    # ← pinned slim image (~150MB vs ~1GB)
+      imagePullPolicy: IfNotPresent        # ← don't re-pull on every run
       command:
         - python3
         - '-c'
       args:
-       - |
-        print("2nd attempt from pipeline")
+        - |
+          print("2nd attempt from pipeline")  # ← fixed indentation (2 spaces inside block)
